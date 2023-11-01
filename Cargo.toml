@@ -9,3 +9,4 @@ edition = "2021"
 aws-config = "0.56.1"
 aws-sdk-cloudwatchlogs = "0.34.0"
 tokio = { version = "1", features = ["full"] }
+chrono = "0.4.31"

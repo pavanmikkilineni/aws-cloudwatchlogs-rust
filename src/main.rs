@@ -1,5 +1,9 @@
+extern crate chrono;
+
+use chrono::Utc;
 use aws_sdk_cloudwatchlogs as cloudwatchlogs;
 use cloudwatchlogs::types::InputLogEvent;
+use std::process::*;
 
 #[::tokio::main]
 async fn main() -> Result<(), cloudwatchlogs::Error> {
@@ -8,8 +12,8 @@ async fn main() -> Result<(), cloudwatchlogs::Error> {
     let client = aws_sdk_cloudwatchlogs::Client::new(&config);
 
     // Define constants for the log group and log stream names
-    const DISTI_LOG_GROUP_NAME: &str = "Disti Logs";
-    const DISTI_LOG_STREAM_NAME: &str = "Application Logs";
+    const DISTI_LOG_GROUP_NAME: &str = "DistiLogs";
+    const DISTI_LOG_STREAM_NAME: &str = "ApplicationLogs";
 
     // Create or retrieve the log group, and add tags
     let disti_log_group = client
@@ -24,6 +28,7 @@ async fn main() -> Result<(), cloudwatchlogs::Error> {
         }
         Err(err) => {
             println!("Error creating log group: {:?}", err);
+            exit(1);
         }
     };
 
@@ -40,12 +45,13 @@ async fn main() -> Result<(), cloudwatchlogs::Error> {
         }
         Err(err) => {
             println!("Error creating log stream: {:?}", err);
+            exit(1);
         }
     }
 
     // Create a log event
     let disti_log_event = InputLogEvent::builder()
-        .timestamp(1)
+        .timestamp(Utc::now().timestamp_millis())
         .message("Hello, World!")
         .build();
 
@@ -62,8 +68,12 @@ async fn main() -> Result<(), cloudwatchlogs::Error> {
         }
         Err(err) => {
             println!("Error sending log event: {:?}", err);
+            exit(1);
         }
     }
 
     Ok(())
 }
+
+
+
